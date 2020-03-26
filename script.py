@@ -23,7 +23,7 @@ def crawlTimestamps(text):
 def downloadVideo(url):
 	options = {
 		"verbose": True,
-		"forcedescription": True,
+		"writedescription": True,
 		"simulate": True,
 		"nocheckcertificate": True
 	}
@@ -37,5 +37,9 @@ if __name__ == "__main__":
 		
 	url = sys.argv[1]
 	downloadVideo(url)
+	
+	print("Reading description...")
+	with open(".description", "r") as file:
+		print(file.read())
 #	id = getVideoID(url)
 #	print(id)
