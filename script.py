@@ -24,7 +24,8 @@ def downloadVideo(url):
 	options = {
 		"verbose": True,
 		"forcedescription": True,
-		"simulate": True
+		"simulate": True,
+		"nocheckcertificate": True
 	}
 	with youtube_dl.YoutubeDL(options) as ydl:
 		ydl.download([url])
