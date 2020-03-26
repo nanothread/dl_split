@@ -7,15 +7,12 @@ def crawl_timestamps(text):
 		the string is the name of the song.
 	'''
 	
-#	for line in text.split("\n"):
-#		print("Testing " + line)
-#		print(" -> " + str(re.search(r"[0-9]:[0-9][0-9]", line)))
-	
 	lines = text.split("\n")
 	lines = list(filter(lambda line: not re.search(r"[0-9]:[0-9][0-9]", line) == None, lines))
 	lines = list(map(lambda line: line.strip(), lines))
 	lines = list(map(lambda line: getTitleAndTimestamp(line), lines))
-	return lines
+	lines = list(map(lambda line: (getSeconds(line[0]), line[1]), lines))
+	return dict(lines)
 	
 def getTitleAndTimestamp(text):
 	search = getTimeSearch(text)
@@ -23,18 +20,17 @@ def getTitleAndTimestamp(text):
 	if search != None:
 		time = text[search.span()[0] : search.span()[1]]
 		
-		remainder = text[search.span()[1] :]
-		nameSearch = re.findall(r"[:alpha:]", remainder) # [^([:digit:]|[:punct:]|[:space:])]
-		if nameSearch == None:
-			return (time, remainder)
+		i = getIndexOfFirstAlphaChar(text)
+		if i == None:
+			return (time, text)
+		else:
+			return (time, text[i:])
 		
-		name = remainder[nameSearch[0].span()[0] :]
-		return(time, name)
 		
 def getIndexOfFirstAlphaChar(text):
 	for i in range(len(text)):
 		c = ord(text[i])
-		if ord(A) <= c <= ord(Z) or ord('a') <= c <= ord('z'):
+		if ord('A') <= c <= ord('Z') or ord('a') <= c <= ord('z'):
 			return i
 	
 def getTimeSearch(text):
@@ -45,13 +41,13 @@ def getTimeSearch(text):
 	return re.search(r"[0-9]?[0-9]:[0-9][0-9]", text)
 		
 
+def getSeconds(time):
+	return sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(time.split(":"))))
+
 if __name__ == "__main__":
-	print(ord('a'))
-	print(ord('z'))
-	print(ord('A'))
-	print(ord('Z'))
-	print(chr(94))
 	# TODO: Testing
+	# TODO: input song title format as argument, e.g. [Artist] - [Name] so we can format metadata
+	
 	print(crawl_timestamps('''
 	A trip into the future. 
 
