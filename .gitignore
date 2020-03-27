@@ -4,3 +4,4 @@ env/
 *.description
 *.DS_Store
 __pycache__
+test\ resources/

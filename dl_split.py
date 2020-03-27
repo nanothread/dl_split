@@ -54,9 +54,12 @@ def getArgs():
 	parser = argparse.ArgumentParser(description=f"Download a music compilation video and split it into tracks.\nExample: python3 {script} -o ~/Desktop/Tracks \"<Video URL>\"")
 	
 	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
-	parser.add_argument("-d", "-dl-only", action="store_true", dest="dl_only", help="Skip splitting the downloaded audio.")
+	parser.add_argument("--dl-only", action="store_true", dest="dl_only", help="Skip splitting the downloaded audio.")
+	parser.add_argument("-t", "--timestamps", help="The path of an existing file of timestamps")
 	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
-	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder")
+	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder", default="/Users/aglen/Desktop/tracks")
+	parser.add_argument("--album", help="Applies to all songs")
+	parser.add_argument("--artist", help="Applies to all songs")
 	parser.add_argument("url", help="The full YouTube URL of the video")
 	
 	return parser.parse_args()
@@ -75,9 +78,19 @@ if __name__ == "__main__":
 		sys.exit(0)
 	
 	videoName = getVideoName(videoFile, vidID)
-	descriptionFile = f"{videoName}-{vidID}.description"
+	descriptionFile = f"{videoName}-{vidID}.description" if args.timestamps == None else args.timestamps
 	
-	splitUpTrack(videoFile, descriptionFile, args.format, args.output_folder, thumbnail)
+	outputFolder = args.output_folder
+		
+	metadata = {
+		"thumbnail": thumbnail,
+		"artist": args.artist,
+		"album": args.album
+	}
+	
+	desc_format = None if args.artist != None else args.format
+	
+	splitUpTrack(videoFile, descriptionFile, desc_format, outputFolder, metadata)
 	
 	os.remove(descriptionFile)
 	os.remove(thumbnail)
