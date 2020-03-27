@@ -68,6 +68,8 @@ def splitUpTrack(track, desc_path, desc_format, outputFolder, metadata):
 		print("\n=> Configuring Tracks...\n")
 		configure_tracks(outputFolder, tracks, metadata)
 		
+		print("\n=> Done! Your tracks are at " + outputFolder)
+		
 
 if __name__ == "__main__":
 	track = "test resources/test.m4a"
