@@ -1,10 +1,9 @@
 from __future__ import unicode_literals
 
-import argparse
 import ffmpeg
+import os 
 from track import crawl_timestamps
 from configure import configure_tracks
-import os 
 
 def splitAudioFile(filename, tracks, outputFolder = "./Tracks"):
 	if not os.path.exists(outputFolder):
@@ -71,38 +70,17 @@ def splitUpTrack(track, desc_path, desc_format, outputFolder, metadata):
 		
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description="Split an existing compilation file into tracks")
+	track = "test resources/test.m4a"
+	description = "test resources/test.description"
+	thumbnail = "test resources/test.jpg"
 	
-	parser.add_argument("-o", "--output-to", dest="output_folder", default="/Users/aglen/Desktop/Tracks", help="The target output folder")
-	parser.add_argument("-d", help="Delete compilation track & description when finished.", action="store_true")
-	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
-	parser.add_argument("--album", help="Applies to all songs")
-	parser.add_argument("--artist", help="Applies to all songs. Overrides -f format")
-	parser.add_argument("filename", help="The filename (minus extension) of the video, description, and thumbnail files.")
-	
-	args = parser.parse_args()
-
-	track = args.filename + ".m4a"
-	description = args.filename + ".description"
-	thumbnail = args.filename + ".jpg"
-	
-	desc_format = args.format
-	if not 'title' in desc_format or not 'artist' in desc_format:
-		desc_format = None
-		
-	outputFolder = args.output_folder
+	desc_format = "artist - title"
+	outputFolder = "./Tracks"
 		
 	metadata = {
 		"thumbnail": thumbnail,
-		"artist": args.artist,
-		"album": args.album
+		"artist": None,
+		"album": None
 	}
-	
-	desc_format = None if args.artist != None else args.format
-	
+		
 	splitUpTrack(track, description, desc_format, outputFolder, metadata)
-	
-	if args.d:
-		os.remove(track)
-		os.remove(description)
-		os.remove(thumbnail)
