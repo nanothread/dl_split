@@ -6,8 +6,8 @@ import os
 import youtube_dl
 from googleapiclient.discovery import build
 
-from timestamp import crawl_timestamps
-from processing import splitAudioFile
+from track import crawl_timestamps
+from trim import splitUpTrack
 
 class String:
 	def __init__(self, value=""):
@@ -71,20 +71,7 @@ if __name__ == "__main__":
 	videoName = getVideoName(videoFile, vidID)
 	descriptionFile = f"{videoName}-{vidID}.description"
 	
-	with open(descriptionFile, "r") as f:
-		description = f.read()
-		
-	tracks = crawl_timestamps(description, args.format)
-	
-	for track in tracks:
-		print(track.pretty())
-	use_format = input("Are these track names & artists correct? [y/n]") == 'y'
-	
-	if not use_format:
-		tracks = crawl_timestamps(description, None)
-	
-	folder = "./tracks" if args.output_folder == None else args.output_folder
-	splitAudioFile(videoFile, tracks, folder)
+	splitUpTrack(videoFile, descriptionFile, args.format, args.output_folder)
 	
 	os.remove(descriptionFile)
 	
