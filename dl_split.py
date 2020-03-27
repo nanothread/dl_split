@@ -6,6 +6,7 @@ import argparse
 import sys
 import os
 import youtube_dl
+import pyperclip
 
 from trim import splitUpTrack
 
@@ -41,7 +42,7 @@ def downloadVideo(url):
 		
 	return filename.value
 
-def getVideoName(filename, vidID): # Shortest Video on Youtube-tPEE9ZwTmy0.f140.m4a
+def getVideoName(filename, vidID): # VidName.f140.m4a -> VidName.m4a
 	return filename.split(".")[0][:-len(vidID)-1]	
 
 def cleanFilename(filename):
@@ -50,14 +51,16 @@ def cleanFilename(filename):
 
 def getArgs():
 	script = os.path.basename(__file__)
+	desktop = os.path.join(os.environ["HOME"], "Desktop", "Tracks")
 	parser = argparse.ArgumentParser(description=f"Download a music compilation video and split it into tracks.\nExample: python3 {script} -o ~/Desktop/Tracks \"<Video URL>\"")
 	
 	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
 	parser.add_argument("--dl-only", action="store_true", dest="dl_only", help="Skip splitting the downloaded audio.")
 	parser.add_argument("-l", "--local", action="store_true", help="Uses local files instead of downloading new ones. If true, URL should point to the local video file.")
 	parser.add_argument("-t", "--timestamps", help="The path of an existing file of timestamps")
+	parser.add_argument("-c", "--clipboard", action="store_true", help="Get the description text from the clipboard")
 	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'")
-	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder")
+	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder", default=desktop)
 	parser.add_argument("--album", help="Applies to all songs")
 	parser.add_argument("--artist", help="Applies to all songs")
 	parser.add_argument("url", help="The full YouTube URL of the video")
@@ -65,8 +68,8 @@ def getArgs():
 	return parser.parse_args()
 
 if __name__ == "__main__":
-	args = getArgs()
-		
+	args = getArgs()		
+	
 	url = args.url
 	if args.local:
 		videoFile = args.url
@@ -86,6 +89,15 @@ if __name__ == "__main__":
 		videoName = getVideoName(videoFile, vidID)
 		descriptionFile = f"{videoName}-{vidID}.description" if args.timestamps == None else args.timestamps
 	
+	if args.clipboard:
+		with open("description.txt", "w") as f:
+			text = pyperclip.paste()
+			lines = len(text.split('\n'))
+			print(f"=> Saved clipboard: {lines} lines")
+			f.write(text)
+			
+		descriptionFile = "description.txt"
+		
 	outputFolder = args.output_folder
 		
 	metadata = {
