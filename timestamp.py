@@ -2,7 +2,7 @@ import re
 
 def crawl_timestamps(text):
 	'''
-		Returns a dictionary of {int: string} where int is the
+		Returns alist of [(int: string)] where int is the
 		number of seconds into the video the song starts and
 		the string is the name of the song.
 	'''
@@ -12,7 +12,7 @@ def crawl_timestamps(text):
 	lines = list(map(lambda line: line.strip(), lines))
 	lines = list(map(lambda line: getTitleAndTimestamp(line), lines))
 	lines = list(map(lambda line: (getSeconds(line[0]), line[1]), lines))
-	return dict(lines)
+	return lines
 	
 def getTitleAndTimestamp(text):
 	search = getTimeSearch(text)
@@ -20,17 +20,18 @@ def getTitleAndTimestamp(text):
 	if search != None:
 		time = text[search.span()[0] : search.span()[1]]
 		
-		i = getIndexOfFirstAlphaChar(text)
+		remainder = text[search.span()[1] + 1:]
+		i = getIndexOfFirstAlphaChar(remainder)
 		if i == None:
 			return (time, text)
 		else:
-			return (time, text[i:])
+			return (time, remainder[i:])
 		
 		
 def getIndexOfFirstAlphaChar(text):
 	for i in range(len(text)):
 		c = ord(text[i])
-		if ord('A') <= c <= ord('Z') or ord('a') <= c <= ord('z'):
+		if ord('A') <= c <= ord('Z') or ord('a') <= c <= ord('z') or ord('0') <= c <= ord('9'):
 			return i
 	
 def getTimeSearch(text):
@@ -45,6 +46,8 @@ def getSeconds(time):
 	return sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(time.split(":"))))
 
 if __name__ == "__main__":
+	print(ord('0'))
+	print(ord('9'))
 	# TODO: Testing
 	# TODO: input song title format as argument, e.g. [Artist] - [Name] so we can format metadata
 	
