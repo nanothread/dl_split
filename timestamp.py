@@ -12,6 +12,9 @@ class Track:
 	def __str__(self):
 		artist = "<Not Found>" if self.artist == None else self.artist
 		return f"Title: {self.title}; Artist: {artist}; Starting at: {self.startTime}s"
+		
+	def pretty(self):
+		return f"{self.title} by {self.artist}" if self.artist != None else self.title
 
 def crawl_timestamps(text, descriptionFormat):
 	'''
@@ -61,6 +64,8 @@ def makeTrack(description, descriptionFormat, seconds):
 	'''
 		Format is 'artist - track' or 'track | artist', etc.
 	'''
+	if descriptionFormat == None:
+		return Track(description, None, seconds)
 	
 	artistSearch = re.search(r"artist", descriptionFormat)
 	try:
@@ -81,26 +86,28 @@ def makeTrack(description, descriptionFormat, seconds):
 	return Track(track, artist, seconds)	
 
 if __name__ == "__main__":
-	print(ord('0'))
-	print(ord('9'))
-	# TODO: Testing
-	# TODO: input song title format as argument, e.g. [Artist] - [Name] so we can format metadata
+	with open('test.description', 'r') as f:
+		description = f.read()
+		
+	times = crawl_timestamps(description, "artist - track")
+	print(times)
+	print(times[3].pretty())
 	
-	print(crawl_timestamps('''
-	A trip into the future. 
-
-	Please enjoy and subscribe for more.
-
-	Track List
-
-	0:00 HOME - Flood
-	3:33 A.L.I.S.O.N - Overflow
-	6:27 Forhill - Searching
-	11:25 Skykot - Timeform
-	16:37 A.L.I.S.O.N - Renaissance
-	20:17 Neydah - Night Sky
-	24:31 A.L.I.S.O.N & Rosentwig - Short Circuit
-	29:11 ＹＯＵＴＨ ８３ - Euphoria
-	33:37 Memorex Memories - Thanks for listening
-	01:11:02 A Random Song
-	''', "artist - track"))#"artist - track"))
+#	print(crawl_timestamps('''
+#	A trip into the future. 
+#
+#	Please enjoy and subscribe for more.
+#
+#	Track List
+#
+#	0:00 HOME - Flood
+#	3:33 A.L.I.S.O.N - Overflow
+#	6:27 Forhill - Searching
+#	11:25 Skykot - Timeform
+#	16:37 A.L.I.S.O.N - Renaissance
+#	20:17 Neydah - Night Sky
+#	24:31 A.L.I.S.O.N & Rosentwig - Short Circuit
+#	29:11 ＹＯＵＴＨ ８３ - Euphoria
+#	33:37 Memorex Memories - Thanks for listening
+#	01:11:02 A Random Song
+#	''', "artist - track"))#"artist - track"))
