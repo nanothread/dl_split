@@ -1,6 +1,6 @@
 # dl_split: A Song Compilation Downloader
 
-**dl_split** is a python script I made for personal use that takes online song compilations (for example, [this](https://www.youtube.com/watch?v=ByS1Rlk_AL8&t=80s)) and splits them into tracks. It does this in a few steps.
+**dl_split** is a python 3 script I made for personal use that takes online song compilations (for example, [this](https://www.youtube.com/watch?v=ByS1Rlk_AL8&t=80s)) and splits them into tracks. It does this in a few steps.
 
 1. It uses `youtube-dl` to download the video, description, and thumbnail.
 2. It searches the video description for the timestamp of each song and splits the video into tracks based on what's found.
@@ -45,7 +45,7 @@ $ ./dl_split.py -f "track - artist" -o "/path/to/folder" "<Video URL>"
 
 
 
-If you know that all the songs have the same artist, you can set some of these flags too.
+If you know that all the songs have the same artist, you can set some of these flags too. In this mode, `dl-split` will add the song order into the metadata so your songs don't get jumbled when you drag them into Music.app.
 
 ```bash
 $ ./dl_split.py --album="Panic!" --artist="Caravan Palace" "<Video URL>"
