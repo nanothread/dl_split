@@ -5,6 +5,9 @@ import os
 import youtube_dl
 from googleapiclient.discovery import build
 
+from timestamp import crawl_timestamps
+from processing import splitAudioFile
+
 '''
 	Call this script in the virtualenv like:
 	python3 script.py "<video-link>"
@@ -24,9 +27,7 @@ def getDescription(id):
 
 def downloadVideo(url):	
 	def completionHandler(info, filename):
-		print("===> Completion called: " + info["status"])
 		if info["status"] == "finished":
-			print("===> Download Finished: " + info["filename"])
 			filename.value = info["filename"]
 			
 	filename = String() # Need to pass by reference to completion handler
@@ -35,7 +36,8 @@ def downloadVideo(url):
 #		"verbose": True,
 		"writedescription": True,
 		"nocheckcertificate": True,
-		"progress_hooks": [lambda info: completionHandler(info, filename)]
+		"progress_hooks": [lambda info: completionHandler(info, filename)],
+		"format": "bestaudio[ext=m4a]"
 	}
 	
 	with youtube_dl.YoutubeDL(options) as ydl:
@@ -48,7 +50,7 @@ def getVideoName(filename, vidID): # Shortest Video on Youtube-tPEE9ZwTmy0.f140.
 
 def cleanFilename(filename):
 	components = filename.split(".")
-	return components[0] + ".mp4"
+	return components[0] + ".m4a"
 
 if __name__ == "__main__":
 	if len(sys.argv) < 2:
@@ -67,7 +69,8 @@ if __name__ == "__main__":
 	with open(descriptionFile, "r") as f:
 		description = f.read()
 		
-	print("Description:\n" + description)
+	times = crawl_timestamps(description)
+	splitAudioFile(videoFile, times)
 	
-	os.remove(videoFile)
-	os.remove(descriptionFile)
+#	os.remove(videoFile)
+#	os.remove(descriptionFile)
