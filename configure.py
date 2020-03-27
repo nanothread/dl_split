@@ -5,6 +5,7 @@ import os
 
 def configure_tracks(output_folder, tracks, metadata):
 	for i in range(len(tracks)):
+		print(f"- Configuring Track {i+1}/{len(tracks)}")
 		track = tracks[i]
 		path = output_folder + "/" + track.filename()
 		set_metadata(path, metadata, track, i + 1)
