@@ -74,10 +74,17 @@ if __name__ == "__main__":
 	with open(descriptionFile, "r") as f:
 		description = f.read()
 		
-	times = crawl_timestamps(description, args.format)
+	tracks = crawl_timestamps(description, args.format)
+	
+	for track in tracks:
+		print(track.pretty())
+	use_format = input("Are these track names & artists correct? [y/n]") == 'y'
+	
+	if not use_format:
+		tracks = crawl_timestamps(description, None)
 	
 	folder = "./tracks" if args.output_folder == None else args.output_folder
-	splitAudioFile(videoFile, times, folder)
+	splitAudioFile(videoFile, tracks, folder)
 	
 	os.remove(descriptionFile)
 	
