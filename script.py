@@ -9,11 +9,6 @@ from googleapiclient.discovery import build
 from timestamp import crawl_timestamps
 from processing import splitAudioFile
 
-'''
-	Call this script in the virtualenv like:
-	python3 script.py "<video-link>"
-'''
-
 class String:
 	def __init__(self, value=""):
 		self.value = value
@@ -54,7 +49,8 @@ def cleanFilename(filename):
 	return components[0] + ".m4a"
 
 def getArgs():
-	parser = argparse.ArgumentParser(description="Download a music compilation video and split it into tracks.")
+	script = os.path.basename(__file__)
+	parser = argparse.ArgumentParser(description=f"Download a music compilation video and split it into tracks.\nExample: python3 {script} -o ~/Desktop/Tracks \"<Video URL>\"")
 	
 	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
 	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
