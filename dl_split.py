@@ -1,3 +1,5 @@
+#!./env/bin/python3
+
 from __future__ import unicode_literals
 
 import argparse
@@ -5,9 +7,7 @@ import sys
 import os
 import youtube_dl
 
-from track import crawl_timestamps
 from trim import splitUpTrack
-from configure import set_cover_image, set_file_icon
 
 class String:
 	def __init__(self, value=""):
@@ -29,7 +29,6 @@ def downloadVideo(url):
 	filename = String() # Need to pass by reference to completion handler
 
 	options = {
-#		"verbose": True,
 		"writedescription": True,
 		"nocheckcertificate": True,
 		"progress_hooks": [lambda info: completionHandler(info, filename)],
@@ -55,9 +54,10 @@ def getArgs():
 	
 	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
 	parser.add_argument("--dl-only", action="store_true", dest="dl_only", help="Skip splitting the downloaded audio.")
+	parser.add_argument("-l", "--local", action="store_true", help="Uses local files instead of downloading new ones. If true, URL should point to the local video file.")
 	parser.add_argument("-t", "--timestamps", help="The path of an existing file of timestamps")
-	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
-	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder", default="/Users/aglen/Desktop/tracks")
+	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'")
+	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder")
 	parser.add_argument("--album", help="Applies to all songs")
 	parser.add_argument("--artist", help="Applies to all songs")
 	parser.add_argument("url", help="The full YouTube URL of the video")
@@ -68,17 +68,23 @@ if __name__ == "__main__":
 	args = getArgs()
 		
 	url = args.url
-	vidID = getVideoID(url)
-	
-	rawFilename = downloadVideo(url)
-	videoFile = cleanFilename(rawFilename)
-	thumbnail = rawFilename.split('.')[0] + ".jpg"
-	
-	if args.dl_only:
-		sys.exit(0)
-	
-	videoName = getVideoName(videoFile, vidID)
-	descriptionFile = f"{videoName}-{vidID}.description" if args.timestamps == None else args.timestamps
+	if args.local:
+		videoFile = args.url
+		rawName = videoFile.split(".")[0]
+		thumbnail = rawName + ".jpg"
+		descriptionFile = rawName + ".description"
+	else:
+		vidID = getVideoID(url)
+		rawFilename = downloadVideo(url)
+		
+		if args.dl_only:
+			sys.exit(0)
+			
+		videoFile = cleanFilename(rawFilename)
+		thumbnail = rawFilename.split('.')[0] + ".jpg"
+		
+		videoName = getVideoName(videoFile, vidID)
+		descriptionFile = f"{videoName}-{vidID}.description" if args.timestamps == None else args.timestamps
 	
 	outputFolder = args.output_folder
 		
