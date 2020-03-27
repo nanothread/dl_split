@@ -6,6 +6,9 @@ class Track:
 		self.artist = artist
 		self.startTime = startTime
 		
+	def filename(self):
+		return self.title + ".m4a"
+		
 	def __repr__(self):
 		return str(self)
 		

@@ -4,10 +4,10 @@ import argparse
 import sys
 import os
 import youtube_dl
-from googleapiclient.discovery import build
 
 from track import crawl_timestamps
 from trim import splitUpTrack
+from configure import set_cover_image, set_file_icon
 
 class String:
 	def __init__(self, value=""):
@@ -33,7 +33,8 @@ def downloadVideo(url):
 		"writedescription": True,
 		"nocheckcertificate": True,
 		"progress_hooks": [lambda info: completionHandler(info, filename)],
-		"format": "bestaudio[ext=m4a]"
+		"format": "bestaudio[ext=m4a]",
+		"writethumbnail": True
 	}
 	
 	with youtube_dl.YoutubeDL(options) as ydl:
@@ -53,6 +54,7 @@ def getArgs():
 	parser = argparse.ArgumentParser(description=f"Download a music compilation video and split it into tracks.\nExample: python3 {script} -o ~/Desktop/Tracks \"<Video URL>\"")
 	
 	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
+	parser.add_argument("-d", "-dl-only", action="store_true", dest="dl_only", help="Skip splitting the downloaded audio.")
 	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
 	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder")
 	parser.add_argument("url", help="The full YouTube URL of the video")
@@ -67,13 +69,18 @@ if __name__ == "__main__":
 	
 	rawFilename = downloadVideo(url)
 	videoFile = cleanFilename(rawFilename)
+	thumbnail = rawFilename.split('.')[0] + ".jpg"
+	
+	if args.dl_only:
+		sys.exit(0)
 	
 	videoName = getVideoName(videoFile, vidID)
 	descriptionFile = f"{videoName}-{vidID}.description"
 	
-	splitUpTrack(videoFile, descriptionFile, args.format, args.output_folder)
+	splitUpTrack(videoFile, descriptionFile, args.format, args.output_folder, thumbnail)
 	
 	os.remove(descriptionFile)
+	os.remove(thumbnail)
 	
 	if not args.keep:
 		os.remove(videoFile)
