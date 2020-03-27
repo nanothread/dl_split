@@ -17,11 +17,6 @@ class String:
 def getVideoID(url):
 	return url.split("v=")[1].split("&")[0]
 
-def getDescription(id):
-	service = build('youtube', 'v3', developerKey='AIzaSyAd6ROXi1xgo-29XwR394Ozri1x9B5XeRQ')
-	result = service.videos().list(part="snippet", id=id).execute()
-	return result["items"][0]["snippet"]["description"]
-
 def downloadVideo(url):	
 	def completionHandler(info, filename):
 		if info["status"] == "finished":
