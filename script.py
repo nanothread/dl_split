@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import argparse
 import sys
 import os
 import youtube_dl
@@ -52,12 +53,20 @@ def cleanFilename(filename):
 	components = filename.split(".")
 	return components[0] + ".m4a"
 
+def getArgs():
+	parser = argparse.ArgumentParser(description="Download a music compilation video and split it into tracks.")
+	
+	parser.add_argument("-k", "--keep", help="Keep the full audio file", action='store_true')
+	parser.add_argument("-f", "--format", help="The description layout. Usually 'artist - track' or 'track - artist'", default="artist - track")
+	parser.add_argument("-o", "--output-to", dest="output_folder", help="The target output folder")
+	parser.add_argument("url", help="The full YouTube URL of the video")
+	
+	return parser.parse_args()
+
 if __name__ == "__main__":
-	if len(sys.argv) < 2:
-		print("Need the video URL as the argument")
-		sys.exit()
+	args = getArgs()
 		
-	url = sys.argv[1]
+	url = args.url
 	vidID = getVideoID(url)
 	
 	rawFilename = downloadVideo(url)
@@ -70,7 +79,11 @@ if __name__ == "__main__":
 		description = f.read()
 		
 	times = crawl_timestamps(description)
-	splitAudioFile(videoFile, times)
 	
-#	os.remove(videoFile)
-#	os.remove(descriptionFile)
+	folder = "./tracks" if args.output_folder == None else args.output_folder
+	splitAudioFile(videoFile, times, folder)
+	
+	os.remove(descriptionFile)
+	
+	if not args.keep:
+		os.remove(videoFile)
