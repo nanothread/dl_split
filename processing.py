@@ -4,14 +4,15 @@ import ffmpeg
 from timestamp import crawl_timestamps
 import os 
 
-def splitAudioFile(filename, timestamps, outputFolder):
+def splitAudioFile(filename, tracks, outputFolder):
 	if not os.path.exists(outputFolder):
 		os.makedirs(outputFolder)
 		
-	numTracks = len(timestamps)
+	numTracks = len(tracks)
 	for i in range(numTracks):
-		startTime, name = timestamps[i]
-		endTime = timestamps[i + 1][0] if i + 1 < len(timestamps) else None
+		startTime = tracks[i].startTime
+		name = tracks[i].title
+		endTime = timestamps[i + 1][0] if i + 1 < numTracks else None
 		
 		print(f" - Making Track ({i + 1}/{numTracks}): {name}")
 		trimOne(filename, f"{outputFolder}/{name}.m4a", startTime, endTime)

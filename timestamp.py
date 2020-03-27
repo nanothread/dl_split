@@ -1,17 +1,29 @@
 import re
 
-def crawl_timestamps(text):
+class Track:
+	def __init__(self, title, artist, startTime):
+		self.title = title
+		self.artist = artist
+		self.startTime = startTime
+		
+	def __repr__(self):
+		return str(self)
+		
+	def __str__(self):
+		artist = "<Not Found>" if self.artist == None else self.artist
+		return f"Title: {self.title}; Artist: {artist}; Starting at: {self.startTime}s"
+
+def crawl_timestamps(text, descriptionFormat):
 	'''
-		Returns alist of [(int: string)] where int is the
-		number of seconds into the video the song starts and
-		the string is the name of the song.
+		Returns a list of Track instances in order of appearance.
 	'''
 	
 	lines = text.split("\n")
 	lines = list(filter(lambda line: not re.search(r"[0-9]:[0-9][0-9]", line) == None, lines))
 	lines = list(map(lambda line: line.strip(), lines))
 	lines = list(map(lambda line: getTitleAndTimestamp(line), lines))
-	lines = list(map(lambda line: (getSeconds(line[0]), line[1]), lines))
+	lines = list(map(lambda line: makeTrack(line[1], descriptionFormat, getSeconds(line[0])), lines))
+	
 	return lines
 	
 def getTitleAndTimestamp(text):
@@ -45,6 +57,29 @@ def getTimeSearch(text):
 def getSeconds(time):
 	return sum(x * int(t) for x, t in zip([1, 60, 3600], reversed(time.split(":"))))
 
+def makeTrack(description, descriptionFormat, seconds):
+	'''
+		Format is 'artist - track' or 'track | artist', etc.
+	'''
+	
+	artistSearch = re.search(r"artist", descriptionFormat)
+	try:
+		if artistSearch.start() == 0:
+			separator = descriptionFormat.split("artist")[1].split("track")[0]
+			components = description.split(separator)
+			artist = components[0]
+			track = components[1]
+		else:
+			separator = descriptionFormat.split("track")[1].split("artist")[0]
+			components = description.split(separator)
+			track = components[0]
+			artist = components[1]
+	except:
+		artist = None
+		track = description
+		
+	return Track(track, artist, seconds)	
+
 if __name__ == "__main__":
 	print(ord('0'))
 	print(ord('9'))
@@ -68,4 +103,4 @@ if __name__ == "__main__":
 	29:11 ＹＯＵＴＨ ８３ - Euphoria
 	33:37 Memorex Memories - Thanks for listening
 	01:11:02 A Random Song
-	'''))
+	''', "artist - track"))#"artist - track"))

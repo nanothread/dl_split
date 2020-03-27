@@ -74,7 +74,7 @@ if __name__ == "__main__":
 	with open(descriptionFile, "r") as f:
 		description = f.read()
 		
-	times = crawl_timestamps(description)
+	times = crawl_timestamps(description, args.format)
 	
 	folder = "./tracks" if args.output_folder == None else args.output_folder
 	splitAudioFile(videoFile, times, folder)
