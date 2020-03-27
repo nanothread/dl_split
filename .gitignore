@@ -1,0 +1,6 @@
+tracks/
+env/
+*.m4a
+*.description
+*.DS_Store
+__pycache__
