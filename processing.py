@@ -4,17 +4,20 @@ import ffmpeg
 from timestamp import crawl_timestamps
 import os 
 
-def splitAudioFile(filename, tracks, outputFolder):
+def splitAudioFile(filename, tracks, outputFolder = "./Tracks"):
 	if not os.path.exists(outputFolder):
 		os.makedirs(outputFolder)
 		
 	numTracks = len(tracks)
 	for i in range(numTracks):
-		startTime = tracks[i].startTime
-		name = tracks[i].title
-		endTime = timestamps[i + 1][0] if i + 1 < numTracks else None
+		track = tracks[i]
+		startTime = track.startTime
+		name = track.title
+
+		endTime = tracks[i + 1].startTime if i + 1 < numTracks else None
 		
-		print(f" - Making Track ({i + 1}/{numTracks}): {name}")
+		t = track.pretty()
+		print(f" - Making Track ({i + 1}/{numTracks}): {t}")
 		trimOne(filename, f"{outputFolder}/{name}.m4a", startTime, endTime)
 		
 def trimOne(inputFile, outputFile, startTime, endTime):
@@ -31,7 +34,7 @@ def trimOne(inputFile, outputFile, startTime, endTime):
 	ffmpeg.run(stream);
 		
 if __name__ == "__main__":
-	with open("ASTRO - A Synthwave Mix [Chillwave - Retrowave - Synthwave]-XccPsuqAz4E.description", "r") as f:
-		times = crawl_timestamps(f.read())
+	with open("test.description", "r") as f:
+		times = crawl_timestamps(f.read(), "artist - track")
 		
-	splitAudioFile("ASTRO - A Synthwave Mix [Chillwave - Retrowave - Synthwave]-XccPsuqAz4E.m4a", times)
+	splitAudioFile("test.m4a", times)
