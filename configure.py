@@ -31,7 +31,7 @@ def set_metadata(track_path, metadata, trackInfo, pos):
 	audio["\xa9nam"] = trackInfo.title
 	if metadata["artist"] != None:
 		audio['\xa9ART'] = metadata["artist"]
-	elif info.artist != None:
+	elif trackInfo.artist != None:
 		audio['\xa9ART'] = trackInfo.artist
 		
 	if metadata["album"] != None:
