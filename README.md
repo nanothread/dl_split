@@ -3,7 +3,7 @@
 **dl_split** is a python 3 script I made for personal use that takes online song compilations (for example, [this](https://www.youtube.com/watch?v=ByS1Rlk_AL8&t=80s)) and splits them into tracks. It does this in a few steps.
 
 1. It uses `youtube-dl` to download the video, description, and thumbnail.
-2. It searches the video description for the timestamp of each song and splits the video into tracks based on what's found.
+2. It searches the video description for the timestamp of each song and uses `ffmpeg`  to split the video into tracks based on what's found.
 3. It configures each track with metadata (if found) such as the song title and artist. It also sets the album art to the video thumbnail so it looks great when you drag it into Apple's Music.app.
 
 This script is only intended for use on songs that are in the public domain.
